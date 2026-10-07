@@ -1,32 +1,36 @@
 from django.shortcuts import get_object_or_404, render
-from blog.models import Post, Category
+
+from blog.models import Category, get_published_posts
 
 POSTS_PER_PAGE = 5
 
 
 def index(request):
+    """Отображает главную страницу блога со списком последних постов."""
     template = 'blog/index.html'
-    post_list = Post.objects.published()[:POSTS_PER_PAGE]
+    post_list = get_published_posts()[:POSTS_PER_PAGE]
     context = {'post_list': post_list}
     return render(request, template, context)
 
 
-def post_detail(request, id):
+def post_detail(request, post_id):
+    """Отображает страницу опубликованного поста."""
     template = 'blog/detail.html'
-    post = get_object_or_404(Post.objects.published(),
-                             pk=id,
+    post = get_object_or_404(get_published_posts(),
+                             pk=post_id,
                              )
     context = {'post': post}
     return render(request, template, context)
 
 
 def category_posts(request, category_slug):
+    """Отображает страницу категории с её опубликованными постами."""
     template = 'blog/category.html'
     category = get_object_or_404(Category,
                                  slug=category_slug,
                                  is_published=True,
                                  )
-    post_list = Post.objects.published().filter(
+    post_list = get_published_posts().filter(
         category=category
     )
     context = {'category': category,

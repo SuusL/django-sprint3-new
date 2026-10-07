@@ -1,22 +1,25 @@
 from django.db import models
-from core.models import PublishedModel, CreatedModel
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from core.models import PublishedModel, CreatedModel
+
+
 User = get_user_model()
 
-TITLE_MAX_LENGTH = 256
+TITLE_MAX_LENGTH = NAME_MAX_LENGTH = 256
 CATEGORY_STR_MAX_LENGTH = 30
 
 
-class PostQuerySet(models.QuerySet):
-    def published(self):
-        """Только опубликованные посты с прошедшей датой публикации."""
-        return self.filter(
-            is_published=True,
-            pub_date__lte=timezone.now(),
-            category__is_published=True,
-        )
+def get_published_posts():
+    """Только опубликованные посты с прошедшей датой публикации."""
+    return Post.objects.select_related(
+        'author', 'category', 'location'
+    ).filter(
+        is_published=True,
+        pub_date__lte=timezone.now(),
+        category__is_published=True,
+    )
 
 
 class Post(PublishedModel, CreatedModel):
@@ -31,7 +34,8 @@ class Post(PublishedModel, CreatedModel):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Автор публикации'
+        verbose_name='Автор публикации',
+        related_name='posts',
     )
 
     location = models.ForeignKey(
@@ -39,22 +43,22 @@ class Post(PublishedModel, CreatedModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name='Местоположение'
+        verbose_name='Местоположение',
+        related_name='posts',
     )
 
     category = models.ForeignKey(
         'Category',
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='Категория'
+        verbose_name='Категория',
+        related_name='posts',
     )
-
-    objects = PostQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.title
@@ -82,7 +86,7 @@ class Category(PublishedModel, CreatedModel):
 class Location(PublishedModel, CreatedModel):
     """Модель Местоположение."""
 
-    name = models.CharField('Название места', max_length=TITLE_MAX_LENGTH)
+    name = models.CharField('Название места', max_length=NAME_MAX_LENGTH)
 
     class Meta(PublishedModel.Meta):
         verbose_name = 'местоположение'
