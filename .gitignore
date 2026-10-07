@@ -147,3 +147,12 @@ dmypy.json
 
 # папки со статикой и медиа
 media/
+
+#Неиспользуемые файлы
+blogicum/blog/tests.py
+blogicum/core/admin.py
+blogicum/core/tests.py
+blogicum/core/views.py
+blogicum/pages/admin.py
+blogicum/pages/models.py
+blogicum/pages/tests.py
