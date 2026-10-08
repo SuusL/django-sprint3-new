@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 
 from core.models import PublishedModel, CreatedModel
 
@@ -9,17 +8,6 @@ User = get_user_model()
 
 TITLE_MAX_LENGTH = NAME_MAX_LENGTH = 256
 CATEGORY_STR_MAX_LENGTH = 30
-
-
-def get_published_posts():
-    """Только опубликованные посты с прошедшей датой публикации."""
-    return Post.objects.select_related(
-        'author', 'category', 'location'
-    ).filter(
-        is_published=True,
-        pub_date__lte=timezone.now(),
-        category__is_published=True,
-    )
 
 
 class Post(PublishedModel, CreatedModel):
@@ -75,7 +63,7 @@ class Category(PublishedModel, CreatedModel):
                             'подчёркивание.',
                             unique=True)
 
-    class Meta(PublishedModel.Meta):
+    class Meta():
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
@@ -88,7 +76,7 @@ class Location(PublishedModel, CreatedModel):
 
     name = models.CharField('Название места', max_length=NAME_MAX_LENGTH)
 
-    class Meta(PublishedModel.Meta):
+    class Meta():
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
-from blog.models import Category, get_published_posts
+from blog.models import Category
+from blog.utils import get_published_posts
 
 POSTS_PER_PAGE = 5
 
