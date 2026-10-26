@@ -63,7 +63,7 @@ class Category(PublishedModel, CreatedModel):
                             'подчёркивание.',
                             unique=True)
 
-    class Meta():
+    class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
@@ -76,7 +76,7 @@ class Location(PublishedModel, CreatedModel):
 
     name = models.CharField('Название места', max_length=NAME_MAX_LENGTH)
 
-    class Meta():
+    class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
